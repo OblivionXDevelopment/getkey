@@ -1,515 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OblivionX - Get Your Key</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OblivionX - Get Your Key</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0b0e 0%, #17191c 100%);
-            color: #eaeaf5;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background: #17191c;
-            border-radius: 16px;
-            border: 1px solid #2a2d36;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            padding: 40px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo {
-            font-size: 32px;
-            font-weight: 600;
-            color: #8c5aff;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            color: #a0a0af;
-            font-size: 14px;
-        }
-
-        .step {
-            margin-bottom: 30px;
-        }
-
-        .step-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .step-number {
-            width: 32px;
-            height: 32px;
-            background: #8c5aff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            margin-right: 12px;
-            color: #0b0b0e;
-        }
-
-        .step-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .system-select {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .system-option {
-            background: #121318;
-            border: 2px solid #2a2d36;
-            border-radius: 12px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .system-option:hover {
-            border-color: #8c5aff;
-            transform: translateY(-2px);
-        }
-
-        .system-option.selected {
-            border-color: #8c5aff;
-            background: rgba(140, 90, 255, 0.1);
-        }
-
-        .system-option input[type="radio"] {
-            display: none;
-        }
-
-        .system-name {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #eaeaf5;
-        }
-
-        .system-duration {
-            font-size: 13px;
-            color: #a0a0af;
-        }
-
-        .checkpoint-container {
-            background: #121318;
-            border: 1px solid #2a2d36;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 15px;
-            text-align: center;
-        }
-
-        .checkpoint-info {
-            color: #a0a0af;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        .checkpoint-button {
-            background: #8c5aff;
-            color: #0b0b0e;
-            border: none;
-            border-radius: 10px;
-            padding: 14px 32px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .checkpoint-button:hover:not(:disabled) {
-            background: #a070ff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(140, 90, 255, 0.3);
-        }
-
-        .checkpoint-button:disabled {
-            background: #2a2d36;
-            color: #666;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .key-display {
-            background: #121318;
-            border: 1px solid #2a2d36;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .key-display.show {
-            display: block;
-        }
-
-        .key-value {
-            background: #0a0b0e;
-            border: 1px solid #2a2d36;
-            border-radius: 8px;
-            padding: 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 15px;
-            color: #8c5aff;
-            margin: 15px 0;
-            word-break: break-all;
-            text-align: center;
-            user-select: all;
-        }
-
-        .copy-button {
-            background: #1e2026;
-            color: #eaeaf5;
-            border: 1px solid #2a2d36;
-            border-radius: 8px;
-            padding: 10px 24px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .copy-button:hover {
-            background: #2a2d36;
-        }
-
-        .status-message {
-            text-align: center;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .status-message.show {
-            display: block;
-        }
-
-        .status-message.success {
-            background: rgba(76, 175, 80, 0.2);
-            color: #4caf50;
-            border: 1px solid #4caf50;
-        }
-
-        .status-message.error {
-            background: rgba(244, 67, 54, 0.2);
-            color: #f44336;
-            border: 1px solid #f44336;
-        }
-
-        .status-message.info {
-            background: rgba(33, 150, 243, 0.2);
-            color: #2196f3;
-            border: 1px solid #2196f3;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #2a2d36;
-            color: #666;
-            font-size: 12px;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #2a2d36;
-            border-top-color: #8c5aff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            vertical-align: middle;
-            margin-left: 8px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
+<style>
+/* ---- STYLES UNCHANGED ---- */
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;
+  background:linear-gradient(135deg,#0a0b0e,#17191c);
+  color:#eaeaf5;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px
+}
+.container{
+  max-width:600px;width:100%;
+  background:#17191c;
+  border-radius:16px;
+  border:1px solid #2a2d36;
+  padding:40px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4)
+}
+.logo{font-size:32px;font-weight:600;color:#8c5aff;text-align:center}
+.subtitle{text-align:center;color:#a0a0af;margin-bottom:30px}
+.step{margin-bottom:30px}
+.step-header{display:flex;align-items:center;margin-bottom:15px}
+.step-number{
+  width:32px;height:32px;border-radius:50%;
+  background:#8c5aff;color:#0b0b0e;
+  display:flex;align-items:center;justify-content:center;
+  margin-right:12px;font-weight:600
+}
+.system-select{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.system-option{
+  background:#121318;border:2px solid #2a2d36;
+  border-radius:12px;padding:20px;text-align:center;
+  cursor:pointer;transition:.2s
+}
+.system-option.selected{border-color:#8c5aff}
+.system-option input{display:none}
+.checkpoint-button{
+  width:100%;padding:14px;
+  border-radius:10px;border:none;
+  font-weight:600;font-size:15px;
+  background:#8c5aff;color:#0b0b0e;
+  cursor:pointer
+}
+.checkpoint-button:disabled{background:#2a2d36;color:#666}
+.key-display{display:none;margin-top:15px}
+.key-display.show{display:block}
+.key-value{
+  background:#0a0b0e;border:1px solid #2a2d36;
+  border-radius:8px;padding:12px;
+  font-family:monospace;color:#8c5aff;
+  text-align:center;margin:15px 0
+}
+.copy-button{
+  background:#1e2026;color:#fff;
+  border:1px solid #2a2d36;
+  padding:10px 24px;border-radius:8px;
+  cursor:pointer
+}
+.status-message{display:none;margin-top:15px;padding:12px;border-radius:8px}
+.status-message.show{display:block}
+.status-message.success{background:rgba(76,175,80,.2);color:#4caf50}
+.status-message.error{background:rgba(244,67,54,.2);color:#f44336}
+.status-message.info{background:rgba(33,150,243,.2);color:#2196f3}
+.loading{
+  display:inline-block;width:16px;height:16px;
+  border:2px solid #2a2d36;
+  border-top-color:#8c5aff;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+  margin-left:6px
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">OblivionX</div>
-            <div class="subtitle">Get your key to access OblivionX</div>
-        </div>
+<div class="container">
 
-        <div class="step">
-            <div class="step-header">
-                <div class="step-number">1</div>
-                <div class="step-title">Select Your System</div>
-            </div>
-            <div class="system-select">
-                <label class="system-option selected" id="workink-option">
-                    <input type="radio" name="system" value="workink" checked>
-                    <div class="system-name">Workink</div>
-                    <div class="system-duration">24 Hour Key</div>
-                </label>
-                <label class="system-option" id="lootlabs-option">
-                    <input type="radio" name="system" value="lootlabs">
-                    <div class="system-name">Lootlabs</div>
-                    <div class="system-duration">72 Hour Key</div>
-                </label>
-            </div>
-        </div>
+<div class="logo">OblivionX</div>
+<div class="subtitle">Get your key to access OblivionX</div>
 
-        <div class="step">
-            <div class="step-header">
-                <div class="step-number">2</div>
-                <div class="step-title">Complete Checkpoint</div>
-            </div>
-            <div class="checkpoint-container">
-                <div class="checkpoint-info">Complete one checkpoint to get your key</div>
-                <button class="checkpoint-button" id="checkpoint-btn">Complete Checkpoint</button>
-            </div>
-        </div>
+<div class="step">
+<div class="step-header">
+<div class="step-number">1</div>
+<div>Select System</div>
+</div>
+<div class="system-select">
+<label class="system-option selected">
+<input type="radio" name="system" value="workink" checked>
+<div>Workink</div>
+<div style="color:#a0a0af;font-size:13px">24 Hour Key</div>
+</label>
+<label class="system-option">
+<input type="radio" name="system" value="lootlabs">
+<div>Lootlabs</div>
+<div style="color:#a0a0af;font-size:13px">72 Hour Key</div>
+</label>
+</div>
+</div>
 
-        <div class="step">
-            <div class="step-header">
-                <div class="step-number">3</div>
-                <div class="step-title">Copy Your Key</div>
-            </div>
-            <div class="key-display" id="key-display">
-                <div class="checkpoint-info">Your key is ready! Copy it and paste it in the application.</div>
-                <div class="key-value" id="key-value">Oblivion-XXXX-XXXX-XXXX</div>
-                <button class="copy-button" id="copy-btn">Copy Key</button>
-            </div>
-        </div>
+<div class="step">
+<div class="step-header">
+<div class="step-number">2</div>
+<div>Generate Key</div>
+</div>
+<button class="checkpoint-button" id="checkpoint-btn">
+Generate Key
+</button>
+</div>
 
-        <div class="status-message" id="status-message"></div>
+<div class="key-display" id="key-display">
+<div>Your key:</div>
+<div class="key-value" id="key-value">Oblivion-XXXX-XXXX-XXXX</div>
+<button class="copy-button" id="copy-btn">Copy</button>
+</div>
 
-        <div class="footer">
-            Keys expire after the specified duration. Keep your key safe and don't share it.
-        </div>
-    </div>
+<div class="status-message" id="status-message"></div>
 
-    <script>
-        const API_BASE_URL = 'https://api-kn3m.onrender.com/api'; // Replace with your server
-        
-        // Replace these with your actual links when ready
-        const WORKINK_LINK = 'https://work.ink/2cZy/oblivionx-key-system';
-        const LOOTLABS_LINK = 'https://lootdest.org/s?45pjCbyj';
+</div>
 
-        // System selection
-        const systemOptions = document.querySelectorAll('.system-option');
-        const radioButtons = document.querySelectorAll('input[name="system"]');
-        
-        systemOptions.forEach((option, index) => {
-            option.addEventListener('click', () => {
-                systemOptions.forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-                radioButtons[index].checked = true;
-            });
-        });
+<script>
+const API_BASE_URL = "https://api-kn3m.onrender.com/api";
+const WORKINK_LINK = "https://work.ink/2cZy/oblivionx-key-system";
+const LOOTLABS_LINK = "https://lootdest.org/s?45pjCbyj";
 
-        const checkpointBtn = document.getElementById('checkpoint-btn');
-        const keyDisplay = document.getElementById('key-display');
-        const keyValue = document.getElementById('key-value');
-        const statusMessage = document.getElementById('status-message');
-        const copyBtn = document.getElementById('copy-btn');
+const btn = document.getElementById("checkpoint-btn");
+const keyBox = document.getElementById("key-value");
+const keyDisplay = document.getElementById("key-display");
+const statusMsg = document.getElementById("status-message");
+const copyBtn = document.getElementById("copy-btn");
 
-        let checkpointCompleted = false;
-        let checkpointWindow = null;
+document.querySelectorAll(".system-option").forEach(opt=>{
+  opt.onclick=()=>{
+    document.querySelectorAll(".system-option").forEach(o=>o.classList.remove("selected"));
+    opt.classList.add("selected");
+    opt.querySelector("input").checked=true;
+  }
+});
 
-        // Check for existing key on load
-        window.addEventListener('load', async () => {
-            const sessionId = getSessionId();
-            const existingKey = await checkExistingKey(sessionId);
-            
-            if (existingKey) {
-                displayKey(existingKey.key, existingKey.expiresIn);
-            }
-        });
+btn.onclick = async () => {
+  const system = document.querySelector("input[name=system]:checked").value;
+  const sessionId = getSessionId();
 
-        // Checkpoint button handler
-        checkpointBtn.addEventListener('click', async () => {
-            const selectedSystem = document.querySelector('input[name="system"]:checked').value;
-            const checkpointUrl = selectedSystem === 'workink' ? WORKINK_LINK : LOOTLABS_LINK;
-            
-            if (!checkpointUrl || checkpointUrl.includes('YOUR_')) {
-                showStatus('Checkpoint links not configured yet. Please contact support.', 'error');
-                return;
-            }
+  // optional: open link but DO NOT wait
+  window.open(system==="workink"?WORKINK_LINK:LOOTLABS_LINK,"_blank");
 
-            // Disable button
-            checkpointBtn.disabled = true;
-            checkpointBtn.innerHTML = 'Opening checkpoint...<span class="loading"></span>';
-            
-            // Open checkpoint in new window
-            checkpointWindow = window.open(checkpointUrl, '_blank', 'width=800,height=600');
-            
-            showStatus('Complete the checkpoint to get your key', 'info');
-            
-            // Start polling for completion
-            const sessionId = getSessionId();
-            pollCheckpointCompletion(sessionId, selectedSystem);
-        });
+  btn.disabled = true;
+  btn.innerHTML = "Generating key<span class='loading'></span>";
+  showStatus("Generating key...", "info");
 
-        // Poll for checkpoint completion
-        async function pollCheckpointCompletion(sessionId, system) {
-            const maxAttempts = 120; // 10 minutes (5 seconds interval)
-            let attempts = 0;
+  try {
+    const res = await fetch(API_BASE_URL + "/generate-key", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ sessionId, system })
+    });
 
-            const pollInterval = setInterval(async () => {
-                attempts++;
-                
-                try {
-                    const response = await fetch(`${API_BASE_URL}/check-completion`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ sessionId, system })
-                    });
+    const data = await res.json();
 
-                    const data = await response.json();
+    if (data.success) {
+      keyBox.textContent = data.key;
+      keyDisplay.classList.add("show");
+      showStatus("Key generated successfully!", "success");
+    } else {
+      throw new Error(data.message);
+    }
+  } catch {
+    showStatus("Failed to generate key.", "error");
+    btn.disabled=false;
+    btn.textContent="Generate Key";
+  }
+};
 
-                    if (data.completed) {
-                        clearInterval(pollInterval);
-                        checkpointBtn.innerHTML = 'Checkpoint Completed!';
-                        await generateKey(sessionId, system);
-                    } else if (attempts >= maxAttempts) {
-                        clearInterval(pollInterval);
-                        checkpointBtn.disabled = false;
-                        checkpointBtn.innerHTML = 'Complete Checkpoint';
-                        showStatus('Checkpoint timeout. Please try again.', 'error');
-                    } else {
-                        // Update button with time remaining
-                        const timeRemaining = Math.ceil((maxAttempts - attempts) * 5 / 60);
-                        checkpointBtn.innerHTML = `Waiting for completion... (${timeRemaining}m)`;
-                    }
-                } catch (error) {
-                    console.error('Polling error:', error);
-                }
-            }, 5000); // Check every 5 seconds
-        }
+copyBtn.onclick = async ()=>{
+  await navigator.clipboard.writeText(keyBox.textContent);
+  showStatus("Key copied!", "success");
+};
 
-        // Generate key after checkpoint completion
-        async function generateKey(sessionId, system) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/generate-key`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sessionId, system })
-                });
+function showStatus(msg,type){
+  statusMsg.textContent=msg;
+  statusMsg.className="status-message show "+type;
+}
 
-                const data = await response.json();
-
-                if (data.success && data.key) {
-                    const duration = system === 'workink' ? 24 : 72;
-                    displayKey(data.key, duration);
-                    showStatus(`Key generated! Valid for ${duration} hours`, 'success');
-                } else {
-                    showStatus(data.message || 'Failed to generate key', 'error');
-                    checkpointBtn.disabled = false;
-                    checkpointBtn.innerHTML = 'Complete Checkpoint';
-                }
-            } catch (error) {
-                showStatus('Failed to generate key. Please try again.', 'error');
-                checkpointBtn.disabled = false;
-                checkpointBtn.innerHTML = 'Complete Checkpoint';
-            }
-        }
-
-        // Check for existing key
-        async function checkExistingKey(sessionId) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/check-key`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sessionId })
-                });
-
-                const data = await response.json();
-
-                if (data.hasKey && data.key && !data.expired) {
-                    return {
-                        key: data.key,
-                        expiresIn: data.expiresIn
-                    };
-                }
-            } catch (error) {
-                console.error('Error checking existing key:', error);
-            }
-            return null;
-        }
-
-        // Display key
-        function displayKey(key, hoursValid) {
-            keyValue.textContent = key;
-            keyDisplay.classList.add('show');
-            checkpointBtn.disabled = true;
-            checkpointBtn.innerHTML = 'Key Already Generated';
-            
-            const expiry = new Date(Date.now() + hoursValid * 60 * 60 * 1000);
-            showStatus(`Key valid until ${expiry.toLocaleString()}`, 'success');
-        }
-
-        // Copy key
-        copyBtn.addEventListener('click', async () => {
-            const key = keyValue.textContent;
-            try {
-                await navigator.clipboard.writeText(key);
-                copyBtn.textContent = 'Copied!';
-                showStatus('Key copied to clipboard!', 'success');
-                setTimeout(() => {
-                    copyBtn.textContent = 'Copy Key';
-                }, 2000);
-            } catch (err) {
-                showStatus('Failed to copy key', 'error');
-            }
-        });
-
-        // Show status message
-        function showStatus(message, type) {
-            statusMessage.textContent = message;
-            statusMessage.className = `status-message show ${type}`;
-            setTimeout(() => {
-                statusMessage.classList.remove('show');
-            }, 5000);
-        }
-
-        // Get or create session ID
-        function getSessionId() {
-            let sessionId = localStorage.getItem('oblivion_session');
-            if (!sessionId) {
-                sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('oblivion_session', sessionId);
-            }
-            return sessionId;
-        }
-    </script>
+function getSessionId(){
+  let id=localStorage.getItem("oblivion_session");
+  if(!id){
+    id="session_"+Date.now()+"_"+Math.random().toString(36).slice(2);
+    localStorage.setItem("oblivion_session",id);
+  }
+  return id;
+}
+</script>
 </body>
 </html>
