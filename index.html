@@ -139,43 +139,62 @@ const keyDisplay = document.getElementById("key-display");
 const statusMsg = document.getElementById("status-message");
 const copyBtn = document.getElementById("copy-btn");
 
-// Check if user returned from key system
-window.onload = () => {
+// 1. AUTO-CHECK ON LOAD
+window.onload = async () => {
     const urlParams = new URLSearchParams(window.location.search);
+    
+    // If user returns with the completion tag
     if (urlParams.get('keysystemcomplete') === 'true') {
-        showStatus("Link completed! Verifying with server...", "info");
-        attemptKeyGeneration();
+        showStatus("Link detected! Verifying with server...", "info");
+        btn.disabled = true;
+        
+        const sessionId = getSessionId();
+        
+        // Tell server the link is done
+        try {
+            const verifyRes = await fetch(API_BASE_URL + "/verify-link", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ sessionId })
+            });
+
+            if (verifyRes.ok) {
+                // Now that it's verified, automatically generate the key
+                attemptKeyGeneration();
+            } else {
+                showStatus("Verification failed. Did you finish the link?", "error");
+                btn.disabled = false;
+            }
+        } catch (err) {
+            showStatus("Server connection error.", "error");
+            btn.disabled = false;
+        }
     }
 };
 
-document.querySelectorAll(".system-option").forEach(opt => {
-    opt.onclick = () => {
-        document.querySelectorAll(".system-option").forEach(o => o.classList.remove("selected"));
-        opt.classList.add("selected");
-        opt.querySelector("input").checked = true;
-    }
-});
-
-btn.onclick = () => {
+// 2. BUTTON LOGIC
+btn.onclick = async () => {
     const system = document.querySelector("input[name=system]:checked").value;
     const link = system === "workink" ? WORKINK_LINK : LOOTLABS_LINK;
-    
-    showStatus("Please complete the link in the new tab...", "info");
-    
-    // Open the key system link
+
+    // Open link in new tab
     window.open(link, "_blank");
 
-    // Change button to "Verify" mode
-    btn.innerHTML = "Verify Completion <span class='loading'></span>";
-    btn.onclick = () => attemptKeyGeneration(); 
+    // Update UI
+    showStatus("Please complete the tasks in the new tab.", "info");
+    btn.innerHTML = "Verify & Generate Key <span class='loading'></span>";
+    
+    // Change button behavior to verify manually if they didn't use the redirect
+    btn.onclick = () => attemptKeyGeneration();
 };
 
+// 3. GENERATION LOGIC
 async function attemptKeyGeneration() {
     const system = document.querySelector("input[name=system]:checked").value;
     const sessionId = getSessionId();
 
     btn.disabled = true;
-    btn.innerHTML = "Verifying... <span class='loading'></span>";
+    btn.innerHTML = "Generating Key... <span class='loading'></span>";
 
     try {
         const res = await fetch(API_BASE_URL + "/generate-key", {
@@ -189,26 +208,27 @@ async function attemptKeyGeneration() {
         if (data.success) {
             keyBox.textContent = data.key;
             keyDisplay.classList.add("show");
-            showStatus("Key generated successfully!", "success");
-            btn.textContent = "Key Generated";
-            // Clean up URL
+            showStatus("Key successfully generated!", "success");
+            btn.textContent = "Key Received";
+            
+            // Clean the URL (remove the ?keysystemcomplete=true)
             window.history.replaceState({}, document.title, window.location.pathname);
         } else {
-            // Server says link isn't done yet
-            showStatus(data.message || "Link not finished yet. Please complete it first.", "error");
+            showStatus(data.message || "Finish the link first!", "error");
             btn.disabled = false;
             btn.textContent = "Verify Again";
         }
     } catch (err) {
-        showStatus("Connection error. Try again.", "error");
+        showStatus("Failed to reach API.", "error");
         btn.disabled = false;
-        btn.textContent = "Retry Verification";
+        btn.textContent = "Retry";
     }
 }
 
+// 4. UTILS
 copyBtn.onclick = async () => {
     await navigator.clipboard.writeText(keyBox.textContent);
-    showStatus("Key copied!", "success");
+    showStatus("Key copied to clipboard!", "success");
 };
 
 function showStatus(msg, type) {
