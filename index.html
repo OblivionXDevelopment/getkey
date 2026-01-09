@@ -139,65 +139,90 @@ const keyDisplay = document.getElementById("key-display");
 const statusMsg = document.getElementById("status-message");
 const copyBtn = document.getElementById("copy-btn");
 
-document.querySelectorAll(".system-option").forEach(opt=>{
-  opt.onclick=()=>{
-    document.querySelectorAll(".system-option").forEach(o=>o.classList.remove("selected"));
-    opt.classList.add("selected");
-    opt.querySelector("input").checked=true;
-  }
+// Check if user returned from key system
+window.onload = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('keysystemcomplete') === 'true') {
+        showStatus("Link completed! Verifying with server...", "info");
+        attemptKeyGeneration();
+    }
+};
+
+document.querySelectorAll(".system-option").forEach(opt => {
+    opt.onclick = () => {
+        document.querySelectorAll(".system-option").forEach(o => o.classList.remove("selected"));
+        opt.classList.add("selected");
+        opt.querySelector("input").checked = true;
+    }
 });
 
-btn.onclick = async () => {
-  const system = document.querySelector("input[name=system]:checked").value;
-  const sessionId = getSessionId();
+btn.onclick = () => {
+    const system = document.querySelector("input[name=system]:checked").value;
+    const link = system === "workink" ? WORKINK_LINK : LOOTLABS_LINK;
+    
+    showStatus("Please complete the link in the new tab...", "info");
+    
+    // Open the key system link
+    window.open(link, "_blank");
 
-  // optional: open link but DO NOT wait
-  window.open(system==="workink"?WORKINK_LINK:LOOTLABS_LINK,"_blank");
+    // Change button to "Verify" mode
+    btn.innerHTML = "Verify Completion <span class='loading'></span>";
+    btn.onclick = () => attemptKeyGeneration(); 
+};
 
-  btn.disabled = true;
-  btn.innerHTML = "Generating key<span class='loading'></span>";
-  showStatus("Generating key...", "info");
+async function attemptKeyGeneration() {
+    const system = document.querySelector("input[name=system]:checked").value;
+    const sessionId = getSessionId();
 
-  try {
-    const res = await fetch(API_BASE_URL + "/generate-key", {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ sessionId, system })
-    });
+    btn.disabled = true;
+    btn.innerHTML = "Verifying... <span class='loading'></span>";
 
-    const data = await res.json();
+    try {
+        const res = await fetch(API_BASE_URL + "/generate-key", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sessionId, system })
+        });
 
-    if (data.success) {
-      keyBox.textContent = data.key;
-      keyDisplay.classList.add("show");
-      showStatus("Key generated successfully!", "success");
-    } else {
-      throw new Error(data.message);
+        const data = await res.json();
+
+        if (data.success) {
+            keyBox.textContent = data.key;
+            keyDisplay.classList.add("show");
+            showStatus("Key generated successfully!", "success");
+            btn.textContent = "Key Generated";
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else {
+            // Server says link isn't done yet
+            showStatus(data.message || "Link not finished yet. Please complete it first.", "error");
+            btn.disabled = false;
+            btn.textContent = "Verify Again";
+        }
+    } catch (err) {
+        showStatus("Connection error. Try again.", "error");
+        btn.disabled = false;
+        btn.textContent = "Retry Verification";
     }
-  } catch {
-    showStatus("Failed to generate key.", "error");
-    btn.disabled=false;
-    btn.textContent="Generate Key";
-  }
-};
-
-copyBtn.onclick = async ()=>{
-  await navigator.clipboard.writeText(keyBox.textContent);
-  showStatus("Key copied!", "success");
-};
-
-function showStatus(msg,type){
-  statusMsg.textContent=msg;
-  statusMsg.className="status-message show "+type;
 }
 
-function getSessionId(){
-  let id=localStorage.getItem("oblivion_session");
-  if(!id){
-    id="session_"+Date.now()+"_"+Math.random().toString(36).slice(2);
-    localStorage.setItem("oblivion_session",id);
-  }
-  return id;
+copyBtn.onclick = async () => {
+    await navigator.clipboard.writeText(keyBox.textContent);
+    showStatus("Key copied!", "success");
+};
+
+function showStatus(msg, type) {
+    statusMsg.textContent = msg;
+    statusMsg.className = "status-message show " + type;
+}
+
+function getSessionId() {
+    let id = localStorage.getItem("oblivion_session");
+    if (!id) {
+        id = "session_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+        localStorage.setItem("oblivion_session", id);
+    }
+    return id;
 }
 </script>
 </body>
